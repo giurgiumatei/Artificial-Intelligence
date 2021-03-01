@@ -28,6 +28,7 @@ stack = []
 visited = []
 
 
+
 class Environment():
     def __init__(self):
         self.__n = 20
@@ -215,6 +216,8 @@ class Drone():
                 try:
                     element = stack[-1]
 
+                    #this while proves that it won't "jump" and that it will always go to a child of a node (UP,RIGHT,DOWN,LEFT)
+                    #because the program never enters this while (ran it with the debugger)
                     while not ( (element[0] == current_x-1 and element[1] == current_y) or (element[0] == current_x and element[1] == current_y+1) or
                                 (element[0] == current_x+1 and element[1] == current_y) or (element[0] == current_x and element[1] == current_y-1) ):
                         del stack[-1]
@@ -281,7 +284,7 @@ def main():
         d.moveDSF(m)
         screen.blit(m.image(d.x, d.y), (400, 0))
         pygame.display.flip()
-        time.sleep(2)
+        time.sleep(0.3)
         if not stack:
             running = False
 

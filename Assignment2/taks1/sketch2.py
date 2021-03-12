@@ -102,20 +102,7 @@ class Drone():
 
 
 
-def cost_from_initial_state(x2,x1,y2,y1,parent):
 
-    current_x = x1
-    current_y = y1
-
-
-    cost = 0
-    while ((current_x, current_y) != (x2, y2)):
-        cost += 1
-        aux_x = parent[(current_x, current_y)][0]
-        aux_y = parent[(current_x, current_y)][1]
-        current_x = aux_x
-        current_y = aux_y
-    return cost
 
 def function_h(x2, x1, y2, y1): #cost heuristic function from the current state to the final state
     return sqrt((x2 - x1)**2 + (y2 - y1)**2)
@@ -133,7 +120,7 @@ def searchAStar(mapM, droneD, initialX, initialY, finalX, finalY):
     visited = []  # cells visited, closed list
     to_visit = [(initialX, initialY)]  # priority queue, open list
     parent = {}
-    path_cost= {}
+  #  path_cost= {}
 
     while to_visit and found == False:
         if not to_visit:
@@ -153,41 +140,29 @@ def searchAStar(mapM, droneD, initialX, initialY, finalX, finalY):
 
             if current_x > 0 and mapM.surface[current_x - 1][current_y] == 0 and (current_x - 1, current_y) not in visited:
 
-                if (current_x -1, current_y) not in parent.keys() or cost_from_initial_state(initialX, current_x-1, initialY, current_y, parent) < path_cost[(current_x - 1, current_y)] \
-                        or (current_x - 1, current_y) not in to_visit:
+                if (current_x - 1, current_y) not in to_visit:
                     parent[(current_x - 1, current_y)] = cell
-                    path_cost[(current_x - 1, current_y)] = cost_from_initial_state(initialX, current_x-1, initialY, current_y, parent)
-
                     if (current_x-1, current_y) not in to_visit:
                         to_visit.append((current_x - 1, current_y))
 
             if current_y < 19 and mapM.surface[current_x][current_y + 1] == 0 and (current_x, current_y + 1) not in visited:
 
-                if (current_x, current_y+1) not in parent.keys() or cost_from_initial_state(initialX, current_x, initialY, current_y + 1, parent) < path_cost[(current_x, current_y + 1)] \
-                        or (current_x, current_y + 1) not in to_visit:
+                if (current_x, current_y + 1) not in to_visit:
                     parent[(current_x, current_y+1)] = cell
-                    path_cost[(current_x, current_y+1)] = cost_from_initial_state(initialX, current_x, initialY, current_y + 1, parent)
-
                     if (current_x, current_y+1) not in to_visit:
                         to_visit.append((current_x, current_y+1))
 
             if current_x < 19 and mapM.surface[current_x + 1][current_y] == 0 and (current_x + 1, current_y) not in visited:
 
-                if (current_x + 1, current_y) not in parent.keys() or cost_from_initial_state(initialX, current_x + 1, initialY, current_y, parent) < path_cost[(current_x + 1, current_y)] \
-                        or (current_x + 1, current_y) not in to_visit:
+                if(current_x + 1, current_y) not in to_visit:
                     parent[(current_x + 1, current_y)] = cell
-                    path_cost[(current_x + 1, current_y)] = cost_from_initial_state(initialX, current_x + 1, initialY, current_y, parent)
-
                     if (current_x + 1, current_y) not in to_visit:
                         to_visit.append((current_x + 1, current_y))
 
             if current_y > 0 and mapM.surface[current_x][current_y - 1] == 0 and (current_x, current_y - 1) not in visited:
 
-                if (current_x, current_y - 1) not in parent.keys() or cost_from_initial_state(initialX, current_x, initialY, current_y - 1, parent) < path_cost[(current_x, current_y - 1)] \
-                        or (current_x, current_y - 1) not in to_visit:
+                if (current_x, current_y - 1) not in to_visit:
                     parent[(current_x, current_y - 1)] = cell
-                    path_cost[(current_x, current_y - 1)] = cost_from_initial_state(initialX, current_x, initialY, current_y - 1, parent)
-
                     if (current_x, current_y - 1) not in to_visit:
                         to_visit.append((current_x, current_y - 1))
 

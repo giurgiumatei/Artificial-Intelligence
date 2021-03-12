@@ -23,7 +23,7 @@ DOWN = 2
 LEFT = 1
 RIGHT = 3
 
-#define indexes variations 
+#define indexes variations
 v = [[-1, 0], [1, 0], [0, 1], [0, -1]]
 
 
@@ -100,21 +100,40 @@ class Drone():
         
         return mapImage
 
+
+
+def cost_from_initial_state(x2,x1,y2,y1,parent):
+
+    current_x = x1
+    current_y = y1
+
+
+    cost = 0
+    while ((current_x, current_y) != (x2, y2)):
+        cost += 1
+        aux_x = parent[(current_x, current_y)][0]
+        aux_y = parent[(current_x, current_y)][1]
+        current_x = aux_x
+        current_y = aux_y
+    return cost
+
 def function_h(x2, x1, y2, y1): #cost heuristic function from the current state to the final state
     return sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
-def function_g(x3, x1, y3, y1): #cost function from the initial state to the current state
-    return sqrt((x3 - x1)**2 + (y3 - y1)**2)
+def function_g(x1, x3, y1, y3): #cost function from the initial state to the current state
+    return sqrt((x1 - x3)**2 + (y1 - y3)**2)
 
 def function_f(x2, x1, y2, y1, x3, y3): #cost estimation of the path
-    result = function_h(x2, x1, y2, y1) + function_g(x3, x1, y3, y1)
+    result = function_h(x2, x1, y2, y1) + function_g(x1, x3, y1, y3)
     return result
 
 
 def searchAStar(mapM, droneD, initialX, initialY, finalX, finalY):
     found = False  # false while no complete path was found
-    visited = []  # cells visited
-    to_visit = [(initialX, initialY)]  # priority queue
+    visited = []  # cells visited, closed list
+    to_visit = [(initialX, initialY)]  # priority queue, open list
+    parent = {}
+    path_cost= {}
 
     while to_visit and found == False:
         if not to_visit:
@@ -131,25 +150,50 @@ def searchAStar(mapM, droneD, initialX, initialY, finalX, finalY):
 
 
         else:
-            aux = []  # auxiliary list
+
+            if current_x > 0 and mapM.surface[current_x - 1][current_y] == 0 and (current_x - 1, current_y) not in visited:
+
+                if (current_x -1, current_y) not in parent.keys() or cost_from_initial_state(initialX, current_x-1, initialY, current_y, parent) < path_cost[(current_x - 1, current_y)] \
+                        or (current_x - 1, current_y) not in to_visit:
+                    parent[(current_x - 1, current_y)] = cell
+                    path_cost[(current_x - 1, current_y)] = cost_from_initial_state(initialX, current_x-1, initialY, current_y, parent)
+
+                    if (current_x-1, current_y) not in to_visit:
+                        to_visit.append((current_x - 1, current_y))
+
+            if current_y < 19 and mapM.surface[current_x][current_y + 1] == 0 and (current_x, current_y + 1) not in visited:
+
+                if (current_x, current_y+1) not in parent.keys() or cost_from_initial_state(initialX, current_x, initialY, current_y + 1, parent) < path_cost[(current_x, current_y + 1)] \
+                        or (current_x, current_y + 1) not in to_visit:
+                    parent[(current_x, current_y+1)] = cell
+                    path_cost[(current_x, current_y+1)] = cost_from_initial_state(initialX, current_x, initialY, current_y + 1, parent)
+
+                    if (current_x, current_y+1) not in to_visit:
+                        to_visit.append((current_x, current_y+1))
+
+            if current_x < 19 and mapM.surface[current_x + 1][current_y] == 0 and (current_x + 1, current_y) not in visited:
+
+                if (current_x + 1, current_y) not in parent.keys() or cost_from_initial_state(initialX, current_x + 1, initialY, current_y, parent) < path_cost[(current_x + 1, current_y)] \
+                        or (current_x + 1, current_y) not in to_visit:
+                    parent[(current_x + 1, current_y)] = cell
+                    path_cost[(current_x + 1, current_y)] = cost_from_initial_state(initialX, current_x + 1, initialY, current_y, parent)
+
+                    if (current_x + 1, current_y) not in to_visit:
+                        to_visit.append((current_x + 1, current_y))
+
+            if current_y > 0 and mapM.surface[current_x][current_y - 1] == 0 and (current_x, current_y - 1) not in visited:
+
+                if (current_x, current_y - 1) not in parent.keys() or cost_from_initial_state(initialX, current_x, initialY, current_y - 1, parent) < path_cost[(current_x, current_y - 1)] \
+                        or (current_x, current_y - 1) not in to_visit:
+                    parent[(current_x, current_y - 1)] = cell
+                    path_cost[(current_x, current_y - 1)] = cost_from_initial_state(initialX, current_x, initialY, current_y - 1, parent)
+
+                    if (current_x, current_y - 1) not in to_visit:
+                        to_visit.append((current_x, current_y - 1))
 
 
-            if current_x > 0 and mapM.surface[current_x - 1][current_y] == 0 and (
-            current_x - 1, current_y) not in visited:
-                aux.append((current_x - 1, current_y))
 
-            if current_y < 19 and mapM.surface[current_x][current_y + 1] == 0 and (
-            current_x, current_y + 1) not in visited:
-                aux.append((current_x, current_y + 1))
-            if current_x < 19 and mapM.surface[current_x + 1][current_y] == 0 and (
-            current_x + 1, current_y) not in visited:
-                aux.append((current_x + 1, current_y))
-
-            if current_y > 0 and mapM.surface[current_x][current_y - 1] == 0 and (
-            current_x, current_y - 1) not in visited:
-                aux.append((current_x, current_y - 1))
-
-            to_visit = to_visit + aux
+           # to_visit = to_visit + aux
             to_visit = sorted(to_visit, key=lambda tup: function_h(finalX, tup[0], finalY, tup[1]), reverse=True)
             to_visit = sorted(to_visit, key=lambda tup: function_f(finalX, tup[0], finalY, tup[1], initialX, initialY), reverse=True)# sort by function f(...)
                                         # f(...)= h(...) + g(...)
@@ -157,7 +201,19 @@ def searchAStar(mapM, droneD, initialX, initialY, finalX, finalY):
                                         # of equality of function f(...) we use
                                         # function h(...) as a secondary criterion
 
-    return visited
+    path = []
+    current_x = finalX
+    current_y = finalY
+
+    while ((current_x, current_y) in parent):
+        path.append((current_x, current_y))
+        aux_x = parent[(current_x, current_y)][0]
+        aux_y = parent[(current_x, current_y)][1]
+        current_x = aux_x
+        current_y = aux_y
+    path.append((initialX, initialY))
+
+    return path
 
 
 
@@ -213,64 +269,64 @@ def searchGreedy(mapM, droneD, initialX, initialY, finalX, finalY):
 def dummysearch():
     #example of some path in test1.map from [5,7] to [7,11]
     return [[5,7],[5,8],[5,9],[5,10],[5,11],[6,11],[7,11]]
-    
+
 def displayWithPath(image, path):
     mark = pygame.Surface((20,20))
     mark.fill(GREEN)
     for move in path:
         image.blit(mark, (move[1] *20, move[0] * 20))
-        
+
     return image
 
-                  
+
 # define a main function
 def main():
-    
+
     # we create the map
-    m = Map() 
+    m = Map()
     #m.randomMap()
     #m.saveMap("test2.map")
     m.loadMap("test1.map")
-    
-    
+
+
     # initialize the pygame module
     pygame.init()
     # load and set the logo
     logo = pygame.image.load("logo32x32.png")
     pygame.display.set_icon(logo)
     pygame.display.set_caption("Path in simple environment")
-        
+
     # we position the drone somewhere in the area
     x = randint(0, 19)
     y = randint(0, 19)
-    
+
     #create drona
     d = Drone(x, y)
-    
-    
-    
+
+
+
     # create a surface on screen that has the size of 400 x 480
     screen = pygame.display.set_mode((400,400))
     screen.fill(WHITE)
-    
-    
-    # define a variable to control the main loop
-            
 
-        
-        
+
+    # define a variable to control the main loop
+
+
+
+
     screen.blit(d.mapWithDrone(m.image()),(0,0))
     pygame.display.flip()
-       
+
     #path = dummysearch() #de schimbat aici
     path = searchAStar(m,d,0,3,19,19) #de schimbat aici
     screen.blit(displayWithPath(m.image(), path),(0,0))
-    
+
     pygame.display.flip()
     time.sleep(60)
     pygame.quit()
-     
-     
+
+
 # run the main function only if this module is executed as the main script
 # (if you import this as a module then nothing is executed)
 if __name__=="__main__":

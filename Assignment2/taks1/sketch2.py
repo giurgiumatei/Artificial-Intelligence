@@ -200,6 +200,7 @@ def searchGreedy(mapM, droneD, initialX, initialY, finalX, finalY):
     found = False #false while no complete path was found
     visited = [] #cells visited
     to_visit = [(initialX, initialY)] #priority queue
+    parent = {}#here we store the parent of each node
 
     while to_visit and found == False:
         if not to_visit:
@@ -219,23 +220,38 @@ def searchGreedy(mapM, droneD, initialX, initialY, finalX, finalY):
             aux = [] #auxiliary list
 
             if current_x > 0 and mapM.surface[current_x - 1][current_y] == 0 and (current_x - 1, current_y) not in visited:
+                parent[(current_x - 1, current_y)] = cell
                 aux.append((current_x-1, current_y))
 
             if current_y < 19 and mapM.surface[current_x][current_y + 1] == 0 and (current_x, current_y + 1) not in visited:
+                parent[(current_x, current_y + 1)] = cell
                 aux.append((current_x, current_y+1))
             if current_x < 19 and mapM.surface[current_x + 1][current_y] == 0 and (current_x + 1, current_y) not in visited:
+                parent[(current_x + 1, current_y)] = cell
                 aux.append((current_x+1, current_y))
 
             if current_y > 0 and mapM.surface[current_x][current_y - 1] == 0 and (current_x, current_y - 1) not in visited:
+                parent[(current_x, current_y - 1)] = cell
                 aux.append((current_x, current_y-1))
 
             to_visit = to_visit + aux
             to_visit = sorted(to_visit, key=lambda tup: function_h(finalX, tup[0], finalY, tup[1]), reverse=True)#sort by euclidean distance
-                                                                                                        #between state and final state
-                                                                                                        #h(x)= sqrt((x2-x1)^2 + (y2-y1)^2)
+            #between state and final state
+            #h(x)= sqrt((x2-x1)^2 + (y2-y1)^2)
 
+    path = []
+    current_x = finalX
+    current_y = finalY
 
-    return visited
+    while ((current_x, current_y) in parent):
+        path.append((current_x, current_y))
+        aux_x = parent[(current_x, current_y)][0]
+        aux_y = parent[(current_x, current_y)][1]
+        current_x = aux_x
+        current_y = aux_y
+    path.append((initialX, initialY))
+
+    return path
 
 
 
@@ -295,6 +311,7 @@ def main():
 
     #path = dummysearch() #de schimbat aici
     path = searchAStar(m,d,0,3,19,19) #de schimbat aici
+   # path = searchGreedy(m,d,0,3,19,19) #de schimbat aici
     screen.blit(displayWithPath(m.image(), path),(0,0))
 
     pygame.display.flip()

@@ -1,5 +1,4 @@
-from Service import *
-
+from UI import *
 
 # define a main function
 def main():
@@ -42,13 +41,16 @@ def main():
 
     #path = dummysearch() #de schimbat aici
     service = Service()
+    ui = UI()
     start_time = time.time()
     #path = service.searchAStar(m,d,0,3,19,19) #de schimbat aici
-    path = service.searchGreedy(m,d,0,3,19,19) #de schimbat aici
+    path = service.searchGreedyBFS(m, d, 0, 3, 19, 19) #de schimbat aici
+    #path = service.searchHillClimbing(m,d,0,3,19,19) #de schimbat aici
+
     end_time = time.time()
     duration = end_time - start_time
     print("Program executed in: " + duration.__str__() + " seconds")
-    screen.blit(service.displayWithPath(m.image(), path),(0,0))
+    screen.blit(ui.displayWithPath(m.image(), path),(0,0))
 
     pygame.display.flip()
     time.sleep(60)

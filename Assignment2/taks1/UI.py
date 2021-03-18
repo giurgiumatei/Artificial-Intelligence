@@ -20,4 +20,13 @@ class UI():
             quit()
 
 
+    def displayWithPath(self,image, path):
+        mark = pygame.Surface((20,20))
+        mark.fill(GREEN)
+        for move in path:
+            image.blit(mark, (move[1] *20, move[0] * 20))
+
+        return image
+
+
 

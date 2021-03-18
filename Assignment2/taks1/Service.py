@@ -1,6 +1,55 @@
 from Drone import *
-
+from copy import deepcopy
 class Service():
+
+
+
+    def searchGreedy(self, mapM, droneD, initialX, initialY, finalX, finalY): #best first search defapt
+        found = False  # false while no complete path was found
+        current_state = (initialX, initialY)
+        path = []
+
+        if initialX == finalX and initialY == finalY:
+            return [current_state]
+
+        while not found:
+
+            path.append(current_state)
+
+            if current_state == (finalX, finalY):
+                found = True
+
+
+            else:
+
+                next_x = current_state[0]
+                next_y = current_state[1]
+                old_state = deepcopy(current_state)
+                old_x = old_state[0]
+                old_y = old_state[1]
+
+                if old_x > 0 and mapM.surface[old_x - 1][old_y] == 0 and function_h(finalX,old_x-1,finalY,old_y) < function_h(finalX,next_x,finalY,next_y):
+                    current_state = (old_x-1, old_y)
+                    next_x = current_state[0]
+                    next_y = current_state[1]
+
+                if old_y < 19 and mapM.surface[old_x][old_y + 1] == 0 and function_h(finalX,old_x,finalY,old_y+1) < function_h(finalX,next_x,finalY,next_y):
+                    current_state = (old_x, old_y + 1)
+                    next_x = current_state[0]
+                    next_y = current_state[1]
+                if old_x < 19 and mapM.surface[old_x + 1][old_y] == 0 and function_h(finalX,old_x+1,finalY,old_y) < function_h(finalX,next_x,finalY,next_y):
+                    current_state = (old_x + 1, old_y)
+                    next_x = current_state[0]
+                    next_y = current_state[1]
+
+                if old_y > 0 and mapM.surface[old_x][old_y - 1] == 0 and function_h(finalX,old_x,finalY,old_y-1) < function_h(finalX,next_x,finalY,next_y):
+                    current_state = (old_x, old_y -1)
+                    next_x = current_state[0]
+                    next_y = current_state[1]
+
+
+
+        return path
 
 
 
@@ -88,7 +137,7 @@ class Service():
 
 
 
-    def searchGreedy(self,mapM, droneD, initialX, initialY, finalX, finalY):
+    def searchGreedyBFS(self, mapM, droneD, initialX, initialY, finalX, finalY):
 
         found = False #false while no complete path was found
         visited = [] #cells visited
@@ -154,10 +203,3 @@ class Service():
         #example of some path in test1.map from [5,7] to [7,11]
         return [[5,7],[5,8],[5,9],[5,10],[5,11],[6,11],[7,11]]
 
-    def displayWithPath(self,image, path):
-        mark = pygame.Surface((20,20))
-        mark.fill(GREEN)
-        for move in path:
-            image.blit(mark, (move[1] *20, move[0] * 20))
-
-        return image
